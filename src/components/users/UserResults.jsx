@@ -1,44 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useContext } from "react";
 import Spinner from "../layout/Spinner";
 import UserItem from "./UserItem";
+import GithubContext from "../../context/github/GithubContext";
 
 function UserResults() {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const {users,loading , fetchUsers} =useContext(GithubContext)
 
   useEffect(() => {
     fetchUsers();
   }, []);
 
-  const fetchUsers = async () => {
-    try {
-      const response = await fetch("/users", {
-        headers: {
-          Authorization: `token ${process.env.REACT_APP_GITHUB_TOKEN}`,
-          "User-Agent": "github_finder_udemy",
-          "Cache-Control": "no-cache",
-        },
-      });
-
-      if (!response.ok) {
-        const errorMessage = await response.text();
-        throw new Error(`GitHub API error: ${response.status} - ${errorMessage}`);
-      }
-
-      const contentType = response.headers.get("content-type");
-      if (!contentType || !contentType.includes("application/json")) {
-        console.error("Unexpected response format. Expected JSON but received:", await response.text());
-        // Handle the unexpected response format accordingly
-        return;
-      }
-
-      const data = await response.json();
-      setUsers(data);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching users:", error.message);
-    }
-  };
+  
+   
 
   if (!loading) {
     return (
